@@ -1,0 +1,10 @@
+ul {
+  max-width: calc(100vw - 400px);
+}
+
+aside {
+  position: fixed;
+  top: 20px;
+  right: 100px;
+  width: 300px;
+}
