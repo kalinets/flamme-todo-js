@@ -19,24 +19,24 @@
     <aside>
       <form onsubmit="addNewItem(event)">
         <h2>Add new item here:</h2>
-        <p>Title</p>
-        <input type="text" id="title">
-        <p>Description</p>
-        <input type="text" id="description">
+        <p>Title:</p>
+        <input type="text" id="newTitle">
+        <p>Description:</p>
+        <input type="text" id="newDescription">
         <button id="add-item">Add Item</button>
       </form>
     </aside>
   </section>
 
   <div id="edit-form" class="edit-form-wrapper">
-    <div class="edit-form-inner">
+    <form onsubmit="saveEditedItem(event)" class="edit-form-inner">
       <h2>Edit the item:</h2>
       <p>New Title:</p>
-      <input type="text" id="edited-title">
+      <input type="text" id="editedTitle">
       <p>New Description:</p>
-      <input type="text" id="edited-description">
-      <button type="button" onclick="saveEditedItem(event)">Save changes</button>
-    </div>
+      <input type="text" id="editedDescription">
+      <button id="save-item">Save changes</button>
+    </form>
   </div>
 </body>
 

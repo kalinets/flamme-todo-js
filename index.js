@@ -1,32 +1,25 @@
-// localStorage.setItem('userToDoItems', JSON.stringify(userItems))
-// const ddd = JSON.parse(localStorage.getItem('userToDoItems'))
-// ddd => array of objects
-
 const todoList = document.getElementById("todo-list");
 let listChildNodes = todoList.childNodes;
-const LOCAL_STORAGE_NAME = 'userToDoItems';
+const LOCAL_STORAGE_NAME = "userToDoItems";
 let userItems = [];
 if (localStorage.getItem(LOCAL_STORAGE_NAME)) {
   userItems = JSON.parse(localStorage.getItem(LOCAL_STORAGE_NAME));
 };
 const editForm = document.getElementById("edit-form");
-const editedTitle = document.getElementById("edited-title");
-const editedDescription = document.getElementById("edited-description");
+const editedTitle = document.getElementById("editedTitle");
+const editedDescription = document.getElementById("editedDescription");
 
 // create list item
 function createListItem(title, description) {
-
   const item = document.createElement("li");
 
   const itemTitle = document.createElement("h4");
   itemTitle.textContent = title;
   item.appendChild(itemTitle);
 
-  if (description) {
-    const itemDescription = document.createElement("p");
-    itemDescription.textContent = description;
-    item.appendChild(itemDescription);
-  }
+  const itemDescription = document.createElement("p");
+  itemDescription.textContent = description;
+  item.appendChild(itemDescription);
 
   const editButton = document.createElement("button");
   editButton.type = "button";
@@ -43,54 +36,81 @@ function createListItem(title, description) {
   todoList.appendChild(item);
 }
 
-// ad new item from the form
+// add new item from the form
 function addNewItem(e) {
   e.preventDefault();
-  const { target: { elements: { title, description } } } = e;
-  if (title.value && description.value) {
-    createListItem(title.value, description.value);
+  const { target: { elements: { newTitle, newDescription } } } = e;
+  if (newTitle.value && newDescription.value) {
+    createListItem(newTitle.value, newDescription.value);
+    // update array
     userItems.push({
-      'title': title.value,
-      'description': description.value
+      "title": newTitle.value,
+      "description": newDescription.value
     });
+    // update localStorage
     localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(userItems));
-    title.value = "";
-    description.value = "";
+    // reset inputs
+    newTitle.value = "";
+    newDescription.value = "";
   } else {
-    alert("Please fill the fields");
+    alert("Please fill all the fields");
   }
 }
 
 // remove the item from the list
-function removeItem(event) {
+function removeItem(e) {
+  // create array from html collection and get desired ID number
   const array = Array.prototype.slice.call(listChildNodes);
-  const desiredItem = array.indexOf(event.target.parentNode);
+  const desiredItem = array.indexOf(e.target.parentNode);
+  // remove from html list
   todoList.children[desiredItem].remove();
+  // remove from array and update localStorage
   userItems.splice(desiredItem, 1);
+  localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(userItems));
 }
 
 // edit item in the list
-function editItem(event) {
-  const parent = event.target.parentNode;
+function editItem(e) {
+  const parent = e.target.parentNode;
+  // create array from html collection and get desired ID number
   const array = Array.prototype.slice.call(listChildNodes);
   const desiredItem = array.indexOf(parent);
+  // get needed values from array and place them inside inputs
   editedTitle.value = userItems[desiredItem].title;
   editedDescription.value = userItems[desiredItem].description;
-  editForm.classList.add('toggled');
+  // add ID to dataset for future needs
+  editForm.dataset.itemId = desiredItem;
+  // show form for editing
+  editForm.classList.add("toggled");
 }
 
 function saveEditedItem(e) {
-  const newTitle = editedTitle.value;
-  const newDescription = editedDescription.value;
+  e.preventDefault();
+  const { target: { elements: { editedTitle, editedDescription } } } = e;
   if (editedTitle.value && editedDescription.value) {
-    editedTitle.value = '';
-    editedDescription.value = '';
-    editForm.classList.remove('toggled');
+    // get the ID from from dataset
+    const idNumber = editForm.dataset.itemId;
+    // update html list
+    listChildNodes[idNumber].childNodes[0].textContent = editedTitle.value;
+    listChildNodes[idNumber].childNodes[1].textContent = editedDescription.value;
+    // update array
+    userItems[idNumber].title = editedTitle.value;
+    userItems[idNumber].description = editedDescription.value;
+    // update localStorage
+    localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(userItems));
+    // reset inputs
+    editedTitle.value = "";
+    editedDescription.value = "";
+    // hide form for editing
+    editForm.classList.remove("toggled");
+    // remove dataset from the form
+    delete editForm.dataset.itemId;
   } else {
     alert("Please fill the fields");
   }
 }
 
+// generate html list from localStorage items
 for (let i = 0; i < userItems.length; i++) {
   createListItem(userItems[i].title, userItems[i].description);
 }
