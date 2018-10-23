@@ -1,70 +1,96 @@
-let sampleItems = [
-  {
-    id: 1,
-    title: "first one",
-    description: "first description"
-  },
-  {
-    id: 2,
-    title: "second one",
-    description: "second description"
-  },
-  {
-    id: 3,
-    title: "third one",
-    description: "third description"
-  }
-];
+// localStorage.setItem('userToDoItems', JSON.stringify(userItems))
+// const ddd = JSON.parse(localStorage.getItem('userToDoItems'))
+// ddd => array of objects
 
 const todoList = document.getElementById("todo-list");
+let listChildNodes = todoList.childNodes;
+const LOCAL_STORAGE_NAME = 'userToDoItems';
 let userItems = [];
+if (localStorage.getItem(LOCAL_STORAGE_NAME)) {
+  userItems = JSON.parse(localStorage.getItem(LOCAL_STORAGE_NAME));
+};
+const editForm = document.getElementById("edit-form");
+const editedTitle = document.getElementById("edited-title");
+const editedDescription = document.getElementById("edited-description");
 
-const createListItem = (title, description) => {
-  const userItemsCount = userItems.length;
+// create list item
+function createListItem(title, description) {
 
   const item = document.createElement("li");
-  item.classList.add("todo-item");
-  item.dataset.itemId = userItemsCount;
 
   const itemTitle = document.createElement("h4");
-  itemTitle.classList.add("todo-item__title");
   itemTitle.textContent = title;
   item.appendChild(itemTitle);
 
-  const itemDescription = document.createElement("p");
-  itemDescription.classList.add("todo-item__description");
-  itemDescription.textContent = description;
-  item.appendChild(itemDescription);
+  if (description) {
+    const itemDescription = document.createElement("p");
+    itemDescription.textContent = description;
+    item.appendChild(itemDescription);
+  }
+
+  const editButton = document.createElement("button");
+  editButton.type = "button";
+  editButton.textContent = "Edit Item";
+  editButton.onclick = editItem;
+  item.appendChild(editButton);
 
   const deleteButton = document.createElement("button");
   deleteButton.type = "button";
   deleteButton.textContent = "Delete Item";
-  deleteButton.dataset.deleteId = userItemsCount;
   deleteButton.onclick = removeItem;
   item.appendChild(deleteButton);
 
   todoList.appendChild(item);
-
-  const currentItem = (userItems[userItemsCount] = {});
-  currentItem.id = userItemsCount;
-  currentItem.title = title;
-  currentItem.description = description;
-};
-
-for (let i = 0; i < sampleItems.length; i++) {
-  createListItem(sampleItems[i].title, sampleItems[i].description);
 }
 
-function addNewItem() {
-  const newTitle = document.getElementById("new-item__title");
-  const newDescription = document.getElementById("new-item__description");
-  createListItem(newTitle.value, newDescription.value);
-  newTitle.value = "";
-  newDescription.value = "";
+// ad new item from the form
+function addNewItem(e) {
+  e.preventDefault();
+  const { target: { elements: { title, description } } } = e;
+  if (title.value && description.value) {
+    createListItem(title.value, description.value);
+    userItems.push({
+      'title': title.value,
+      'description': description.value
+    });
+    localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(userItems));
+    title.value = "";
+    description.value = "";
+  } else {
+    alert("Please fill the fields");
+  }
 }
 
+// remove the item from the list
 function removeItem(event) {
-  const idNumber = event.target.dataset.deleteId;
-  userItems.splice(idNumber, 1);
-  // todoList.childNodes.
+  const array = Array.prototype.slice.call(listChildNodes);
+  const desiredItem = array.indexOf(event.target.parentNode);
+  todoList.children[desiredItem].remove();
+  userItems.splice(desiredItem, 1);
+}
+
+// edit item in the list
+function editItem(event) {
+  const parent = event.target.parentNode;
+  const array = Array.prototype.slice.call(listChildNodes);
+  const desiredItem = array.indexOf(parent);
+  editedTitle.value = userItems[desiredItem].title;
+  editedDescription.value = userItems[desiredItem].description;
+  editForm.classList.add('toggled');
+}
+
+function saveEditedItem(e) {
+  const newTitle = editedTitle.value;
+  const newDescription = editedDescription.value;
+  if (editedTitle.value && editedDescription.value) {
+    editedTitle.value = '';
+    editedDescription.value = '';
+    editForm.classList.remove('toggled');
+  } else {
+    alert("Please fill the fields");
+  }
+}
+
+for (let i = 0; i < userItems.length; i++) {
+  createListItem(userItems[i].title, userItems[i].description);
 }

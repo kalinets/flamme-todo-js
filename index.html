@@ -5,26 +5,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>ToDo vanila JS</title>
+  <title>ToDo vanilla JS</title>
   <link rel="stylesheet" href="styles.css">
   <script src="index.js" async></script>
 </head>
 
 <body>
-  <h1>The greatest ToDo list!</h1>
+  <h1>The greatest CHANNÈL app!</h1>
 
   <section>
     <ul id="todo-list"></ul>
 
     <aside>
-      <h2>Add new item here:</h2>
-      <p>Title</p>
-      <input type="text" id="new-item__title">
-      <p>Description</p>
-      <input type="text" id="new-item__description">
-      <button type="button" id="add-item" onclick="addNewItem()">Add Item</button>
+      <form onsubmit="addNewItem(event)">
+        <h2>Add new item here:</h2>
+        <p>Title</p>
+        <input type="text" id="title">
+        <p>Description</p>
+        <input type="text" id="description">
+        <button id="add-item">Add Item</button>
+      </form>
     </aside>
   </section>
+
+  <div id="edit-form" class="edit-form-wrapper">
+    <div class="edit-form-inner">
+      <h2>Edit the item:</h2>
+      <p>New Title:</p>
+      <input type="text" id="edited-title">
+      <p>New Description:</p>
+      <input type="text" id="edited-description">
+      <button type="button" onclick="saveEditedItem(event)">Save changes</button>
+    </div>
+  </div>
 </body>
 
 </html>
